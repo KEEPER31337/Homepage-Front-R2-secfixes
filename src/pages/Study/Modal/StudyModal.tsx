@@ -53,7 +53,7 @@ const StudyModal = ({ open, setOpen, selectedStudyInfo, setSelectedStudyInfo, cu
   const { mutate: addStudy } = useAddStudyMutation();
   const { mutate: editStudy } = useEditStudyMutation();
   const { mutate: editStudyThumbnail } = useEditStudyThumbnailMutation();
-  const { data: members } = useGetMemberInfoQuery();
+  const { data: members } = useGetMemberInfoQuery({ enabled: open });
   const queryClient = useQueryClient();
 
   const theme = useTheme();

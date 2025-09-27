@@ -49,11 +49,12 @@ const useDeleteExecutiveJobMutation = () => {
   });
 };
 
-const useGetMemberInfoQuery = () => {
+const useGetMemberInfoQuery = ({ enabled = true }: { enabled?: boolean } = {}) => {
   const fetcher = () => axios.get(`members/real-name`).then(({ data }) => data);
 
   return useQuery<ExecutiveMember[]>(dutyManageKeys.memberInfo, fetcher, {
     select: (data) => data.map(formatMemberGeneration),
+    enabled,
   });
 };
 
