@@ -190,6 +190,12 @@ const BoardWrite = () => {
                 <StandardInput
                   className="w-full sm:w-[498px]"
                   {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    if (editMode) {
+                      setHasContent(true);
+                    }
+                  }}
                   error={Boolean(error)}
                   helperText={error?.message}
                   autoFocus
