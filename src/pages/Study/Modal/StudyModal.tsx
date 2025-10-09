@@ -17,6 +17,7 @@ import {
 } from '@api/studyApi';
 import { COMMON, STUDY_MSG } from '@constants/helperText';
 import memberState from '@recoil/member.recoil';
+import isTrustedLink from '@utils/validateURL';
 import AutoComplete, { MultiAutoCompleteValue } from '@components/Input/AutoComplete';
 import StandardInput from '@components/Input/StandardInput';
 import ActionModal from '@components/Modal/ActionModal';
@@ -267,10 +268,7 @@ const StudyModal = ({ open, setOpen, selectedStudyInfo, setSelectedStudyInfo, cu
                 defaultValue={studyDetail?.links.find((link) => link.title === 'Github')?.content ?? ''}
                 control={control}
                 rules={{
-                  pattern: {
-                    value: /^(https:\/\/github.com)/,
-                    message: STUDY_MSG.error.onlyGitLink,
-                  },
+                  validate: (value) => isTrustedLink(value, ['github.com']) || STUDY_MSG.error.onlyGitLink,
                 }}
                 render={({ field, fieldState: { error } }) => {
                   return (
@@ -298,10 +296,7 @@ const StudyModal = ({ open, setOpen, selectedStudyInfo, setSelectedStudyInfo, cu
                 defaultValue={studyDetail?.links.find((link) => link.title === 'Notion')?.content ?? ''}
                 control={control}
                 rules={{
-                  pattern: {
-                    value: /^(https:\/\/)/,
-                    message: COMMON.error.onlyHttps,
-                  },
+                  validate: (value) => isTrustedLink(value, ['notion.com']) || STUDY_MSG.error.onlyGitLink,
                 }}
                 render={({ field, fieldState: { error } }) => {
                   return (
@@ -349,10 +344,7 @@ const StudyModal = ({ open, setOpen, selectedStudyInfo, setSelectedStudyInfo, cu
                 }
                 control={control}
                 rules={{
-                  pattern: {
-                    value: /^(https:\/\/)/,
-                    message: COMMON.error.onlyHttps,
-                  },
+                  validate: (value: string) => value.startsWith('https://') || COMMON.error.onlyHttps,
                 }}
                 render={({ field, fieldState: { error } }) => {
                   return (
