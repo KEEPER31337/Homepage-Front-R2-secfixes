@@ -1,4 +1,4 @@
-function isTrustedLink(link: string, trustedDomains: string[], exactOnly = true): boolean {
+const validateLink = (link: string, trustedDomains: string[], exactOnly = true): boolean => {
   if (typeof link !== 'string' || !Array.isArray(trustedDomains)) return false;
 
   try {
@@ -9,6 +9,6 @@ function isTrustedLink(link: string, trustedDomains: string[], exactOnly = true)
   } catch {
     return false;
   }
-}
+};
 
-export default isTrustedLink;
+export default validateLink;
