@@ -81,7 +81,7 @@ const BoardWrite = () => {
   const handleEditorBlur = () => {
     const content = editorRef.current?.getInstance().getMarkdown();
 
-    if (!content || content.length < 0) {
+    if (!content || content.trim().length === 0) {
       setHasContent(false);
       setContentErrMsg(COMMON.error.required);
       return;
