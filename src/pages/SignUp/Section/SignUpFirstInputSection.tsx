@@ -29,6 +29,8 @@ const SignUpFirstInputSection = ({ setCurrentStep }: SignUpFirstInputSectionProp
     getValues,
     handleSubmit,
     watch,
+    trigger,
+    clearErrors,
     setError,
     formState: { isSubmitting, isValid },
   } = useForm({ mode: 'onBlur' });
@@ -66,6 +68,31 @@ const SignUpFirstInputSection = ({ setCurrentStep }: SignUpFirstInputSectionProp
       queryClient.setQueryData(signUpKeys.loginIdDuplication({ loginId: loginIdState }), undefined);
     }
   }, [watch('loginId')]);
+
+  const passwordValue = watch('password');
+  const passwordConfirmValue = watch('passwordConfirm');
+
+  useEffect(() => {
+    clearErrors('password');
+
+    const timer = setTimeout(() => {
+      if (passwordValue) {
+        trigger('password');
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [passwordValue, trigger, clearErrors]);
+
+  useEffect(() => {
+    clearErrors('passwordConfirm');
+
+    const timer = setTimeout(() => {
+      if (passwordConfirmValue) {
+        trigger('passwordConfirm');
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [passwordConfirmValue, trigger, clearErrors]);
 
   return (
     <Stack component="form" spacing={2} onSubmit={handleSubmit(handleFirstStepFormSubmit)}>
