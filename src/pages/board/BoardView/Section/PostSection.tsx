@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import { Button, Typography } from '@mui/material';
 import { VscArrowDown, VscArrowUp, VscFolder, VscFolderOpened } from 'react-icons/vsc';
 import { PostInfo } from '@api/dto';
@@ -21,7 +21,7 @@ interface PostSectionProps {
 }
 
 const PostSection = ({ postId, post, password }: PostSectionProps) => {
-  const [fileOpen, toggleFileOpen] = useReducer((prev) => !prev, true);
+  const [fileOpen, toggleFileOpen] = useReducer((prev) => !prev, false);
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const hasWarningModal = post.categoryName === '시험게시판' && post.isRead === false && !fileOpen;
 
@@ -55,11 +55,6 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
     controlDislikes(postId);
   };
 
-  useEffect(() => {
-    handleFileOpenButtonClick();
-    // toggleFileOpen();
-  }, []);
-
   return (
     <div className="min-h-[500px] bg-middleBlack px-6 pb-8 pt-3 sm:px-14 sm:py-10">
       <StandardViewer className="mb-4 min-h-[380px]" content={post.content} />
@@ -74,7 +69,7 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
             첨부파일 ({post.fileCount})
           </Button>
           {fileOpen && (
-            <div className="mb-10 mt-2 space-y-2 text-pointBlue">
+            <div className="mt-2 mb-10 space-y-2 text-pointBlue">
               <Typography variant="small" className="block text-subOrange">
                 *파일 다운로드를 위해서는 댓글 작성이 필요합니다.
               </Typography>
@@ -83,7 +78,7 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
           )}
         </>
       )}
-      <div className="mt-8 flex items-center justify-center space-x-2">
+      <div className="flex items-center justify-center mt-8 space-x-2">
         {post.isLike ? (
           <FilledButton small onClick={handleLikeButtonClick}>
             <VscArrowUp className="mr-1" size={10} />
