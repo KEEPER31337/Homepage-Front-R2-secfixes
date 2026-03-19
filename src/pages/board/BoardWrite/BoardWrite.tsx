@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Stack, Typography } from '@mui/material';
-import { Editor } from '@toast-ui/react-editor';
-import { useRecoilValue } from 'recoil';
-import { PostInfo, UploadPostSettings } from '@api/dto';
+import React, { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Stack, Typography } from "@mui/material";
+import { Editor } from "@toast-ui/react-editor";
+import { useRecoilValue } from "recoil";
+import { PostInfo, UploadPostSettings } from "@api/dto";
 import {
   useAddFilesMutation,
   useDeleteFilesMutation,
@@ -12,16 +12,15 @@ import {
   useEditPostThumbnailMutation,
   useGetPostFilesQuery,
   useUploadPostMutation,
-} from '@api/postApi';
-import { COMMON } from '@constants/helperText';
-import memberState from '@recoil/member.recoil';
-import { categoryNameToId } from '@utils/converter';
-import OutlinedButton from '@components/Button/OutlinedButton';
-import StandardEditor from '@components/Editor/StandardEditor';
-import StandardInput from '@components/Input/StandardInput';
-import PageTitle from '@components/Typography/PageTitle';
-import FileUploader from '@components/Uploader/FileUploader';
-import SettingUploadModal from './Modal/SettingUploadModal';
+} from "@api/postApi";
+import { COMMON } from "@constants/helperText";
+import memberState from "@recoil/member.recoil";
+import { categoryNameToId } from "@utils/converter";
+import OutlinedButton from "@components/Button/OutlinedButton";
+import StandardInput from "@components/Input/StandardInput";
+import PageTitle from "@components/Typography/PageTitle";
+import FileUploader from "@components/Uploader/FileUploader";
+import SettingUploadModal from "./Modal/SettingUploadModal";
 
 const POST_TITLE_MAX_LENGTH = 50;
 
@@ -48,12 +47,14 @@ const BoardWrite = () => {
   });
   const [thumbnail, setThumbnail] = useState<Blob | null>(null);
   const [isThumbnailChanged, setIsThumbnailChanged] = useState(false);
-  const [existingFiles, setExistingFiles] = useState<(File & { fileId: number })[]>([]);
+  const [existingFiles, setExistingFiles] = useState<
+    (File & { fileId: number })[]
+  >([]);
   const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
   const [fileIdsToDelete, setFileIdsToDelete] = useState<number[]>([]);
   const [settingModalOpen, setSettingModalOpen] = useState(false);
   const [hasContent, setHasContent] = useState(false);
-  const [contentErrMsg, setContentErrMsg] = useState('');
+  const [contentErrMsg, setContentErrMsg] = useState("");
 
   const userInfo = useRecoilValue(memberState);
   const editorRef = useRef<Editor>();
@@ -67,10 +68,14 @@ const BoardWrite = () => {
     control,
     getValues,
     formState: { isValid },
-  } = useForm({ mode: 'onBlur' });
+  } = useForm({ mode: "onBlur" });
 
   if (editMode) {
-    const { data: filesInfo } = useGetPostFilesQuery(editMode?.postId, true, editMode?.password);
+    const { data: filesInfo } = useGetPostFilesQuery(
+      editMode?.postId,
+      true,
+      editMode?.password,
+    );
     useEffect(() => {
       if (!filesInfo) return;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,13 +95,17 @@ const BoardWrite = () => {
   };
 
   const handleUploadButonClick = () => {
-    const content = editorRef.current?.getInstance().getMarkdown() || '';
+    const content = editorRef.current?.getInstance().getMarkdown() || "";
 
     if (editMode) {
       editPost(
         {
           postId: editMode.postId,
-          editPostInfo: { title: getValues('postTitle'), content, ...postSettingInfo },
+          editPostInfo: {
+            title: getValues("postTitle"),
+            content,
+            ...postSettingInfo,
+          },
         },
         {
           onSuccess: () => {
@@ -109,7 +118,10 @@ const BoardWrite = () => {
             }
 
             if (fileIdsToDelete.length > 0) {
-              editDeleteFiles({ postId: editMode.postId, fileIds: fileIdsToDelete });
+              editDeleteFiles({
+                postId: editMode.postId,
+                fileIds: fileIdsToDelete,
+              });
             }
 
             navigate(`/board/${categoryName}`);
@@ -121,7 +133,12 @@ const BoardWrite = () => {
 
     uploadPostMutation(
       {
-        request: { categoryId, title: getValues('postTitle'), content, ...postSettingInfo },
+        request: {
+          categoryId,
+          title: getValues("postTitle"),
+          content,
+          ...postSettingInfo,
+        },
         thumbnail,
         files: filesToAdd,
       },
@@ -163,20 +180,25 @@ const BoardWrite = () => {
     <div>
       <div className="flex">
         <PageTitle>{categoryName}</PageTitle>
-        {categoryName === '익명게시판' && (
-          <Typography marginLeft={2} lineHeight={5} variant="small" className="text-subOrange">
+        {categoryName === "익명게시판" && (
+          <Typography
+            marginLeft={2}
+            lineHeight={5}
+            variant="small"
+            className="text-subOrange"
+          >
             *익명 게시판은 글 수정/삭제, 임시저장이 불가합니다.
           </Typography>
         )}
       </div>
-      <div className="mb-5 flex w-full items-center">
-        <Stack className="w-full" flexDirection={{ sm: 'row' }}>
+      <div className="flex items-center w-full mb-5">
+        <Stack className="w-full" flexDirection={{ sm: "row" }}>
           <Typography fontWeight="semibold" className="!mr-2 pt-1">
             제목
           </Typography>
           <Controller
             name="postTitle"
-            defaultValue={editMode ? editMode.post.title : ''}
+            defaultValue={editMode ? editMode.post.title : ""}
             control={control}
             rules={{
               required: COMMON.error.required,
@@ -200,12 +222,14 @@ const BoardWrite = () => {
         </Stack>
       </div>
       <div>
-        <StandardEditor
-          height="470px"
-          initialValue={editMode?.post.content}
-          forwardedRef={editorRef as React.MutableRefObject<Editor>}
-          onChange={handleEditorBlur}
-        />
+        <Suspense fallback={<div>에디터 로딩 중...</div>}>
+          <StandardEditor
+            height="470px"
+            initialValue={editMode?.post.content}
+            forwardedRef={editorRef as React.MutableRefObject<Editor>}
+            onChange={handleEditorBlur}
+          />
+        </Suspense>
         <Typography variant="small" className="text-subRed">
           {!hasContent && contentErrMsg}
         </Typography>
@@ -223,13 +247,19 @@ const BoardWrite = () => {
         />
       </div>
       <div className="flex justify-end space-x-2">
-        {!editMode && !(categoryName === '익명게시판') && (
-          <OutlinedButton onClick={() => handleSaveButtonClick({ isTemp: true })} disabled={!isValid}>
+        {!editMode && !(categoryName === "익명게시판") && (
+          <OutlinedButton
+            onClick={() => handleSaveButtonClick({ isTemp: true })}
+            disabled={!isValid}
+          >
             임시저장
           </OutlinedButton>
         )}
-        <OutlinedButton onClick={() => handleSaveButtonClick({ isTemp: false })} disabled={!isValid || !hasContent}>
-          {editMode ? '수정하기' : '작성완료'}
+        <OutlinedButton
+          onClick={() => handleSaveButtonClick({ isTemp: false })}
+          disabled={!isValid || !hasContent}
+        >
+          {editMode ? "수정하기" : "작성완료"}
         </OutlinedButton>
       </div>
       <SettingUploadModal
@@ -247,3 +277,7 @@ const BoardWrite = () => {
 };
 
 export default BoardWrite;
+
+export const StandardEditor = lazy(
+  () => import("@components/Editor/StandardEditor"),
+);

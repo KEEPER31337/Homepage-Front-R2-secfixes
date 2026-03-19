@@ -1,18 +1,22 @@
-import React, { useReducer, useState } from 'react';
-import { Button, Typography } from '@mui/material';
-import { VscArrowDown, VscArrowUp, VscFolder, VscFolderOpened } from 'react-icons/vsc';
-import { PostInfo } from '@api/dto';
+import React, { useReducer, useState, lazy, Suspense } from "react";
+import { Button, Typography } from "@mui/material";
+import {
+  VscArrowDown,
+  VscArrowUp,
+  VscFolder,
+  VscFolderOpened,
+} from "react-icons/vsc";
+import { PostInfo } from "@api/dto";
 import {
   useGetPostFilesQuery,
   useControlPostLikesMutation,
   useControlPostDislikesMutation,
   useDownloadFileMutation,
-} from '@api/postApi';
-import FilledButton from '@components/Button/FilledButton';
-import OutlinedButton from '@components/Button/OutlinedButton';
-import FileViewer from '@components/Viewer/FileViewer';
-import StandardViewer from '@components/Viewer/StandardViewer';
-import WarningDeductPointModal from '../Modal/WarningDeductPointModal';
+} from "@api/postApi";
+import FilledButton from "@components/Button/FilledButton";
+import OutlinedButton from "@components/Button/OutlinedButton";
+import FileViewer from "@components/Viewer/FileViewer";
+import WarningDeductPointModal from "../Modal/WarningDeductPointModal";
 
 interface PostSectionProps {
   postId: number;
@@ -23,7 +27,8 @@ interface PostSectionProps {
 const PostSection = ({ postId, post, password }: PostSectionProps) => {
   const [fileOpen, toggleFileOpen] = useReducer((prev) => !prev, false);
   const [warningModalOpen, setWarningModalOpen] = useState(false);
-  const hasWarningModal = post.categoryName === '시험게시판' && post.isRead === false && !fileOpen;
+  const hasWarningModal =
+    post.categoryName === "시험게시판" && post.isRead === false && !fileOpen;
 
   const { data: files } = useGetPostFilesQuery(postId, fileOpen, password);
   const { mutate: controlLikes } = useControlPostLikesMutation();
@@ -57,7 +62,9 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
 
   return (
     <div className="min-h-[500px] bg-middleBlack px-6 pb-8 pt-3 sm:px-14 sm:py-10">
-      <StandardViewer className="mb-4 min-h-[380px]" content={post.content} />
+      <Suspense fallback={<div>로딩 중...</div>}>
+        <StandardViewer className="mb-4 min-h-[380px]" content={post.content} />
+      </Suspense>
       {post.fileCount > 0 && (
         <>
           <Button
@@ -73,7 +80,12 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
               <Typography variant="small" className="block text-subOrange">
                 *파일 다운로드를 위해서는 댓글 작성이 필요합니다.
               </Typography>
-              {files && <FileViewer files={files} onRowClick={handleDownloadFileClick} />}
+              {files && (
+                <FileViewer
+                  files={files}
+                  onRowClick={handleDownloadFileClick}
+                />
+              )}
             </div>
           )}
         </>
@@ -114,3 +126,7 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
 };
 
 export default PostSection;
+
+export const StandardViewer = lazy(
+  () => import("@components/Viewer/StandardViewer"),
+);
