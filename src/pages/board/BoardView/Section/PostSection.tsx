@@ -1,18 +1,23 @@
-import React, { useReducer, useState } from 'react';
-import { Button, Typography } from '@mui/material';
-import { VscArrowDown, VscArrowUp, VscFolder, VscFolderOpened } from 'react-icons/vsc';
-import { PostInfo } from '@api/dto';
+import React, { useReducer, useState } from "react";
+import { Button, Typography } from "@mui/material";
+import {
+  VscArrowDown,
+  VscArrowUp,
+  VscFolder,
+  VscFolderOpened,
+} from "react-icons/vsc";
+import { PostInfo } from "@api/dto";
 import {
   useGetPostFilesQuery,
   useControlPostLikesMutation,
   useControlPostDislikesMutation,
   useDownloadFileMutation,
-} from '@api/postApi';
-import FilledButton from '@components/Button/FilledButton';
-import OutlinedButton from '@components/Button/OutlinedButton';
-import FileViewer from '@components/Viewer/FileViewer';
-import StandardViewer from '@components/Viewer/StandardViewer';
-import WarningDeductPointModal from '../Modal/WarningDeductPointModal';
+} from "@api/postApi";
+import FilledButton from "@components/Button/FilledButton";
+import OutlinedButton from "@components/Button/OutlinedButton";
+import FileViewer from "@components/Viewer/FileViewer";
+import StandardViewer from "@components/Viewer/StandardViewer";
+import WarningDeductPointModal from "../Modal/WarningDeductPointModal";
 
 interface PostSectionProps {
   postId: number;
@@ -23,7 +28,8 @@ interface PostSectionProps {
 const PostSection = ({ postId, post, password }: PostSectionProps) => {
   const [fileOpen, toggleFileOpen] = useReducer((prev) => !prev, false);
   const [warningModalOpen, setWarningModalOpen] = useState(false);
-  const hasWarningModal = post.categoryName === '시험게시판' && post.isRead === false && !fileOpen;
+  const hasWarningModal =
+    post.categoryName === "시험게시판" && post.isRead === false && !fileOpen;
 
   const { data: files } = useGetPostFilesQuery(postId, fileOpen, password);
   const { mutate: controlLikes } = useControlPostLikesMutation();
@@ -41,6 +47,13 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
   const handleWarningModalActionClick = () => {
     setWarningModalOpen(false);
     toggleFileOpen();
+
+    const queryClient = require("react-query").useQueryClient
+      ? require("react-query").useQueryClient()
+      : undefined;
+    if (queryClient) {
+      queryClient.invalidateQueries(["post", postId, password]);
+    }
   };
 
   const handleDownloadFileClick = (fileId: number, fileName: string) => {
@@ -73,7 +86,12 @@ const PostSection = ({ postId, post, password }: PostSectionProps) => {
               <Typography variant="small" className="block text-subOrange">
                 *파일 다운로드를 위해서는 댓글 작성이 필요합니다.
               </Typography>
-              {files && <FileViewer files={files} onRowClick={handleDownloadFileClick} />}
+              {files && (
+                <FileViewer
+                  files={files}
+                  onRowClick={handleDownloadFileClick}
+                />
+              )}
             </div>
           )}
         </>
