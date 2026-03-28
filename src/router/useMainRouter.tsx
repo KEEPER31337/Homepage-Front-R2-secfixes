@@ -1,34 +1,15 @@
-import React from 'react';
-import { useRoutes } from 'react-router-dom';
-import Game from '@pages/Game/Game';
-import Library from '@pages/Library/Library';
-import NotFound from '@pages/NotFound/NotFound';
-import Profile from '@pages/Profile/Profile';
-import SignUp from '@pages/SignUp/SignUp';
-import Study from '@pages/Study/Study';
-import ActiveMemberManage from '@pages/admin/ActiveMemberManage/ActiveMemberManage';
-import DutyManage from '@pages/admin/DutyManage/DutyManage';
-import LibraryManage from '@pages/admin/LibraryManage/LibraryManage';
-import MeritManage from '@pages/admin/MeritManage/MeritManage';
-import SeminarManage from '@pages/admin/SeminarManage/SeminarManage';
-import BoardList from '@pages/board/BoardList/BoardList';
-import BoardView from '@pages/board/BoardView/BoardView';
-import BoardWrite from '@pages/board/BoardWrite/BoardWrite';
-import Home from '@pages/home/Home';
-import Login from '@pages/login/Login';
-import SearchAccount from '@pages/login/SearchAccount';
-import Rank from '@pages/rank/Rank';
-import SeminarAttend from '@pages/senimarAttend/SenimarAttend';
-import FitContainer from '@components/Layout/Container/FitContainer';
-import FullContainer from '@components/Layout/Container/FullContainer';
-import MainLayout from '@components/Layout/MainLayout';
-import NeedAuth from '@components/NeedAuth/NeedAuth';
-import NeedLogin from '@components/NeedAuth/NeedLogin';
+import React, { lazy, Suspense } from "react";
+import { useRoutes } from "react-router-dom";
+import FitContainer from "@components/Layout/Container/FitContainer";
+import FullContainer from "@components/Layout/Container/FullContainer";
+import MainLayout from "@components/Layout/MainLayout";
+import NeedAuth from "@components/NeedAuth/NeedAuth";
+import NeedLogin from "@components/NeedAuth/NeedLogin";
 
 const useMainRouter = () =>
   useRoutes([
     {
-      path: '/',
+      path: "/",
       element: <MainLayout />,
       children: [
         {
@@ -36,29 +17,52 @@ const useMainRouter = () =>
           children: [
             {
               index: true,
-              element: <Home />,
+              element: (
+                /* TODO: fallback 컴포넌트 구현 */
+                <Suspense fallback={<div>로딩 중...</div>}>
+                  <Home />
+                </Suspense>
+              ),
             },
             {
-              path: '*',
-              element: <NotFound from="Page" />,
+              path: "*",
+              element: (
+                <Suspense fallback={<div>로딩 중...</div>}>
+                  <NotFound from="Page" />
+                </Suspense>
+              ),
             },
             {
-              path: 'signUp',
-              element: <SignUp />,
+              path: "signUp",
+              element: (
+                <Suspense fallback={<div>로딩 중...</div>}>
+                  <SignUp />
+                </Suspense>
+              ),
             },
             {
-              path: 'login',
-              element: <Login />,
+              path: "login",
+              element: (
+                <Suspense fallback={<div>로딩 중...</div>}>
+                  <Login />
+                </Suspense>
+              ),
             },
             {
-              path: 'searchAccount',
-              element: <SearchAccount />,
+              path: "searchAccount",
+              element: (
+                <Suspense fallback={<div>로딩 중...</div>}>
+                  <SearchAccount />
+                </Suspense>
+              ),
             },
             {
-              path: 'profile/:memberId/*',
+              path: "profile/:memberId/*",
               element: (
                 <NeedLogin>
-                  <Profile />
+                  <Suspense fallback={<div>로딩 중...</div>}>
+                    <Profile />
+                  </Suspense>
                 </NeedLogin>
               ),
             },
@@ -68,13 +72,15 @@ const useMainRouter = () =>
           element: <FitContainer />,
           children: [
             {
-              path: 'admin',
+              path: "admin",
               children: [
                 {
-                  path: 'dutyManage',
+                  path: "dutyManage",
                   element: (
                     <NeedAuth>
-                      <DutyManage />
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <DutyManage />
+                      </Suspense>
                     </NeedAuth>
                   ),
                 },
@@ -83,89 +89,109 @@ const useMainRouter = () =>
                   element: <div />,
                 }, */
                 {
-                  path: 'libraryManage/*',
+                  path: "libraryManage/*",
                   element: (
-                    <NeedAuth roles={['ROLE_사서']}>
-                      <LibraryManage />
+                    <NeedAuth roles={["ROLE_사서"]}>
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <LibraryManage />
+                      </Suspense>
                     </NeedAuth>
                   ),
                 },
                 {
-                  path: 'seminarManage',
+                  path: "seminarManage",
                   element: (
-                    <NeedAuth roles={['ROLE_서기']}>
-                      <SeminarManage />
+                    <NeedAuth roles={["ROLE_서기"]}>
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <SeminarManage />
+                      </Suspense>
                     </NeedAuth>
                   ),
                 },
                 {
-                  path: 'activeMemberManage',
+                  path: "activeMemberManage",
                   element: (
-                    <NeedAuth roles={['ROLE_서기']}>
-                      <ActiveMemberManage />
+                    <NeedAuth roles={["ROLE_서기"]}>
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <ActiveMemberManage />
+                      </Suspense>
                     </NeedAuth>
                   ),
                 },
                 {
-                  path: 'meritManage',
+                  path: "meritManage",
                   element: (
-                    <NeedAuth roles={['ROLE_서기']}>
-                      <MeritManage />
+                    <NeedAuth roles={["ROLE_서기"]}>
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <MeritManage />
+                      </Suspense>
                     </NeedAuth>
                   ),
                 },
               ],
             },
             {
-              path: 'board',
+              path: "board",
               children: [
                 {
-                  path: ':categoryName',
+                  path: ":categoryName",
                   element: (
                     <NeedLogin>
-                      <BoardList />
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <BoardList />
+                      </Suspense>
                     </NeedLogin>
                   ),
                 },
                 {
-                  path: 'write/:categoryName',
+                  path: "write/:categoryName",
                   element: (
                     <NeedLogin>
-                      <BoardWrite />
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <BoardWrite />
+                      </Suspense>
                     </NeedLogin>
                   ),
                 },
                 {
-                  path: 'view/:postId',
+                  path: "view/:postId",
                   element: (
                     <NeedLogin>
-                      <BoardView />
+                      <Suspense fallback={<div>로딩 중...</div>}>
+                        <BoardView />
+                      </Suspense>
                     </NeedLogin>
                   ),
                 },
               ],
             },
             {
-              path: 'study',
+              path: "study",
               element: (
                 <NeedLogin>
-                  <Study />
+                  <Suspense fallback={<div>로딩 중...</div>}>
+                    <Study />
+                  </Suspense>
                 </NeedLogin>
               ),
             },
             {
-              path: 'library',
+              path: "library",
               element: (
                 <NeedLogin>
-                  <Library />
+                  <Suspense fallback={<div>로딩 중...</div>}>
+                    <Library />
+                  </Suspense>
                 </NeedLogin>
               ),
             },
             {
-              path: 'seminar',
+              path: "seminar",
               element: (
                 <NeedLogin>
-                  <SeminarAttend />
+                  <Suspense fallback={<div>로딩 중...</div>}>
+                    <SeminarAttend />
+                  </Suspense>
                 </NeedLogin>
               ),
             },
@@ -174,18 +200,22 @@ const useMainRouter = () =>
               element: <div />,
             }, */
             {
-              path: 'rank',
+              path: "rank",
               element: (
                 <NeedLogin>
-                  <Rank />
+                  <Suspense fallback={<div>로딩 중...</div>}>
+                    <Rank />
+                  </Suspense>
                 </NeedLogin>
               ),
             },
             {
-              path: 'game',
+              path: "game",
               element: (
                 <NeedLogin>
-                  <Game />
+                  <Suspense fallback={<div>로딩 중...</div>}>
+                    <Game />
+                  </Suspense>
                 </NeedLogin>
               ),
             },
@@ -225,3 +255,29 @@ const useMainRouter = () =>
   ]);
 
 export default useMainRouter;
+
+const Game = lazy(() => import("@pages/Game/Game"));
+const Library = lazy(() => import("@pages/Library/Library"));
+const NotFound = lazy(() => import("@pages/NotFound/NotFound"));
+const Profile = lazy(() => import("@pages/Profile/Profile"));
+const SignUp = lazy(() => import("@pages/SignUp/SignUp"));
+const Study = lazy(() => import("@pages/Study/Study"));
+const ActiveMemberManage = lazy(
+  () => import("@pages/admin/ActiveMemberManage/ActiveMemberManage"),
+);
+const DutyManage = lazy(() => import("@pages/admin/DutyManage/DutyManage"));
+const LibraryManage = lazy(
+  () => import("@pages/admin/LibraryManage/LibraryManage"),
+);
+const MeritManage = lazy(() => import("@pages/admin/MeritManage/MeritManage"));
+const SeminarManage = lazy(
+  () => import("@pages/admin/SeminarManage/SeminarManage"),
+);
+const BoardList = lazy(() => import("@pages/board/BoardList/BoardList"));
+const BoardView = lazy(() => import("@pages/board/BoardView/BoardView"));
+const BoardWrite = lazy(() => import("@pages/board/BoardWrite/BoardWrite"));
+const Home = lazy(() => import("@pages/home/Home"));
+const Login = lazy(() => import("@pages/login/Login"));
+const SearchAccount = lazy(() => import("@pages/login/SearchAccount"));
+const Rank = lazy(() => import("@pages/rank/Rank"));
+const SeminarAttend = lazy(() => import("@pages/senimarAttend/SenimarAttend"));
